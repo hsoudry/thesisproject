@@ -1,6 +1,17 @@
 @extends('layouts.app')
 
 @section('content')
+@if(session('status'))
+<div class="col-sm-offset-1 col-xs-12 col-sm-10 alert alert-success">
+    <p>
+      @if(session('status')=='CREATED')
+        New query successfully created !
+      @else
+        Query successfully updated !
+      @endif
+    </p>
+</div>
+@endif
 <div class="row">
   <div class="col-sm-offset-1 col-xs-12 col-sm-10">
          <div class="panel panel-default">
@@ -22,7 +33,7 @@
               <tr>
                 <td>{{$query->query_type}}</td>
                 <td>{{$query->status}}</td>
-                <td>{{$query->request_time}}</td>
+                <td>{{$query->created_at}}</td>
                 <td>
                   @if($query->completion_time=='')
                     Not yet completed

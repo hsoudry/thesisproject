@@ -17,6 +17,10 @@ Route::get('/', function () {
 
 Route::auth();
 
-Route::get('/home', 'HomeController@index');
+//Route::get('/home', 'HomeController@index');
+
+Route::get('/contact', function() {
+  return view('contact');
+});
 
 Route::resource('queries', 'QueryController');

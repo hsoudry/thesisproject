@@ -3,9 +3,9 @@
 @section('content')
 <div class="row">
   <div class="col-xs-12 col-sm-offset-1 col-sm-10">
-    <h1>Create a new Query</h1>
+    <h1>Edit your query</h1>
     <hr/>
-    {!! Form::open(array('action' => 'QueryController@store')) !!}
+    {!! Form::model($query, array('method' => 'PATCH', 'action' => ['QueryController@update',$query->id])) !!}
 
     <div class="form-group">
       <div class="row">
@@ -24,14 +24,15 @@
 
     <div class="form-group">
       {!! Form::label('query_date','Query search date:') !!}
-      {!! Form::date('query_date', \Carbon\Carbon::createFromDate(2013,1,1), array('class'=>'form-control')) !!}<br>
+      {!! Form::date('query_date', \Carbon\Carbon::parse($query->query_time) , array('class'=>'form-control')) !!}<br>
       {!! Form::label('query_date','Query search time:') !!}
-      {!! Form::time('query_time', '12:00' , array('class'=>'form-control')) !!}
+      {!! Carbon\Carbon::setToStringFormat('H:i'); !!}
+      {!! Form::time('query_time', \Carbon\Carbon::parse($query->query_time) , array('class'=>'form-control')) !!}
     </div>
 
   <div class="form-group">
     {!! Form::label('filename','Output file name:') !!}
-    {!! Form::text('filename','output_'.Auth::user()->name.'_'.\Carbon\Carbon::now()->timestamp, array('class'=>'form-control')) !!}
+    {!! Form::text('filename',$query->path, array('class'=>'form-control')) !!}
   </div>
 
 
@@ -51,5 +52,4 @@
     @endif
   </div>
 </div>
-
 @stop

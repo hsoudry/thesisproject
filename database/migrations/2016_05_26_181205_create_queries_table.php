@@ -17,7 +17,6 @@ class CreateQueriesTable extends Migration
             $table->integer('user_id')->unsigned();
             $table->enum('query_type', [1,2]);
             $table->enum('status', ['Pending','Running','Done','Error'])->default('Pending');
-            $table->timestamp('request_time');
             $table->timestamp('completion_time')->nullable();
             $table->string('path');
             $table->timestamp('query_time');

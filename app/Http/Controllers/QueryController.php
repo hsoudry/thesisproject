@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Auth;
 
+use App\Http\Requests\QueryRequest;
+
 use Illuminate\Http\Request;
 
 use App\Query;
@@ -36,23 +38,38 @@ class QueryController extends Controller
       return view('queries.create');
     }
 
-    public function store(Request $request) {
-      $user = Auth::user();
+    public function edit($id) {
+      $query = Query::findorfail($id);
 
-      $this->validate($request, array(
-                                      'query_type' => 'required',
-                                      //'query_date' => 'required|date|after:01/01/2013|before:31/12/2013',
-                                      //'query_time' => 'required|date',
-                                      'filename' => 'required|max:255|unique:queries,path,NULL,id,user_id,'.$user->id,
-                                      ));
+      return view('queries.edit',compact('query'));
+    }
+
+    public function store(QueryRequest $request) {
+      //validation happens here
+
+      $user = Auth::user();
 
       Query::create(array(
                             'user_id' => $user->id,
                             'query_type' => $request->input('query_type'),
-                            'request_time' => Carbon::now(),
                             'path' => $request->input('filename'),
                             'query_time' => Carbon::parse($request->input('query_date').' '.$request->input('query_time')),
                           ));
-     return redirect('queries');
+     return redirect('queries')->with('status','CREATED');
+    }
+
+    public function update($id, QueryRequest $request)
+    {
+      
+      $user = Auth::user();
+      $query = Query::findorfail($id);
+      $query->update(array(
+                            'user_id' => $user->id,
+                            'query_type' => $request->input('query_type'),
+                            'path' => $request->input('filename'),
+                            'query_time' => Carbon::parse($request->input('query_date').' '.$request->input('query_time')),
+                          ));
+
+      return redirect('queries')->with('status','UPDATED');
     }
 }
