@@ -10,7 +10,13 @@ class Query extends Model
       'user_id',
       'query_type',
       'status',
-      'request_time'
+      'path',
+      'request_time',
+      'query_time',
+    ];
+
+    protected $guarded = [
+      'id',
     ];
 
     public function user() {

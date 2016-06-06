@@ -16,13 +16,15 @@ class CreateQueriesTable extends Migration
             $table->increments('id');
             $table->integer('user_id')->unsigned();
             $table->enum('query_type', [1,2]);
-            $table->enum('status', ['Pending','Running','Done','Error']);
+            $table->enum('status', ['Pending','Running','Done','Error'])->default('Pending');
             $table->timestamp('request_time');
             $table->timestamp('completion_time')->nullable();
-            $table->string('file_link');
+            $table->string('path');
+            $table->timestamp('query_time');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+            $table->unique(array('user_id', 'path'),'unique_file_key');
         });
     }
 
