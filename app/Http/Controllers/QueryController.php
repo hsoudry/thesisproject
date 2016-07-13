@@ -60,7 +60,7 @@ class QueryController extends Controller
 
     public function update($id, QueryRequest $request)
     {
-      
+
       $user = Auth::user();
       $query = Query::findorfail($id);
       $query->update(array(
