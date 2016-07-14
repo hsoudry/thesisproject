@@ -49,13 +49,18 @@ class QueryController extends Controller
 
       $user = Auth::user();
 
+      $path = $request->input('filename');
+      $query_time = Carbon::parse($request->input('query_date').' '.$request->input('query_time'));
+      $result = buildQuery1($query_time, $path);
+
       Query::create(array(
                             'user_id' => $user->id,
                             'query_type' => $request->input('query_type'),
-                            'path' => $request->input('filename'),
-                            'query_time' => Carbon::parse($request->input('query_date').' '.$request->input('query_time')),
+                            'path' => $path,
+                            'query_time' => $query_time,
                           ));
-     return redirect('queries')->with('status','CREATED');
+
+     return redirect('queries')->with('status','CREATED')->with('result',$result);
     }
 
     public function update($id, QueryRequest $request)
@@ -72,4 +77,48 @@ class QueryController extends Controller
 
       return redirect('queries')->with('status','UPDATED');
     }
+
+    private function buildQuery1(String $query_time, String $path) {
+      $client = AWS::createClient('EMR');
+
+      $result = $client->runJobFlow([
+        'AmiVersion' => '4.7.1',
+        'Applications' => [
+          [
+            'Name' => 'Hadoop',
+            'Version' => '2.7.2',
+          ],
+        ],
+        'Instances' => [
+          'Ec2KeyName' => 'EMR key',
+          'InstanceGroups' => [
+            [
+              'InstanceCount' => 1,
+              'InstanceRole' => 'MASTER',
+              'InstanceType' => 'm3.xlarge',
+            ],
+            [
+              'InstanceCount' => 2,
+              'InstanceRole' => 'CORE',
+              'InstanceType' => 'm3.xlarge',
+            ],
+          ],
+        ],
+        'Name' => 'Query 1 cluster',
+        'Steps' => [
+          [
+            'ActionOnFailure' => 'TERMINATE_CLUSTER',
+            'HadoopJarStep' => [
+              'Args' => ['s3a://thesisdata/input', 's3a://thesisdata/output/'+$path, $query_time],
+              'Jar' => 's3a://thesisdata/jar/TopTenRoutes.jar',
+              'MainClass' => 'TopTenRoutes',
+            ],
+            'LogUri' => 's3a://thesisdata/logs/',
+            'Name' => 'Top ten computation',
+          ],
+        ],
+      ]);
+      return $result;
+    }
+
 }
