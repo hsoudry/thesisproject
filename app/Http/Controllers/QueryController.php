@@ -51,6 +51,7 @@ class QueryController extends Controller
 
       $path = $request->input('filename');
       $query_time = Carbon::parse($request->input('query_date').' '.$request->input('query_time'));
+
       $result = buildQuery1($query_time, $path);
 
       Query::create(array(

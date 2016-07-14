@@ -1,5 +1,13 @@
 <?php
 
+// Amazon Elastic Beanstalk environment variable
+if (!defined('APP_ENV')) {
+  define('APP_ENV', $_SERVER['APP_ENV']);
+  define('APP_DEBUG', $_SERVER['APP_DEBUG']);
+  define('APP_URL', $_SERVER['APP_URL']);
+  define('APP_KEY', $_SERVER['APP_KEY']);
+}
+
 return [
 
     /*
@@ -13,7 +21,7 @@ return [
     |
     */
 
-    'env' => env('APP_ENV', 'production'),
+    'env' => APP_ENV,
 
     /*
     |--------------------------------------------------------------------------
@@ -26,7 +34,7 @@ return [
     |
     */
 
-    'debug' => env('APP_DEBUG', false),
+    'debug' => APP_DEBUG,
 
     /*
     |--------------------------------------------------------------------------
@@ -39,7 +47,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => APP_URL,
 
     /*
     |--------------------------------------------------------------------------
@@ -91,7 +99,7 @@ return [
     |
     */
 
-    'key' => env('APP_KEY'),
+    'key' => APP_KEY,
 
     'cipher' => 'AES-256-CBC',
 
