@@ -1,5 +1,10 @@
 <?php
 
+// Check RDS database connection
+if(DB::connection()->getDatabaseName())
+{
+   echo "Connected to database ".DB::connection()->getDatabaseName();
+}
 /**
  * Laravel - A PHP Framework For Web Artisans
  *
