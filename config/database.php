@@ -65,7 +65,7 @@ return [
             'driver' => 'mysql',
             'host' => RDS_HOSTNAME,
             'port' => env('DB_PORT', '3306'),
-            'database' => RDS_USERNAME,
+            'database' => RDS_DB_NAME,
             'username' => RDS_USERNAME,
             'password' => RDS_PASSWORD,
             'charset' => 'utf8',
