@@ -1,7 +1,5 @@
 <?php
 
-// Amazon Elastic Beanstalk database connection
-
 if (!defined('RDS_HOSTNAME')) {
   define('RDS_HOSTNAME', $_SERVER['RDS_HOSTNAME']);
   define('RDS_USERNAME', $_SERVER['RDS_USERNAME']);
@@ -63,7 +61,7 @@ return [
 
         'mysql' => [
             'driver' => 'mysql',
-            'host' => RDS_HOSTNAME,
+            'host' => env('DB_HOST', 'localhost'),
             'port' => env('DB_PORT', '3306'),
             'database' => RDS_DB_NAME,
             'username' => RDS_USERNAME,

@@ -13,7 +13,7 @@
 </div>
 @endif
 <div class="row">
-  <div class="col-sm-offset-1 col-xs-12 col-sm-10">
+  <div class="col-sm-offset-2 col-xs-12 col-sm-8">
          <div class="panel panel-default">
           <div class="panel-heading">
             <h4>Your Queries</h4>
@@ -33,7 +33,7 @@
               <tr>
                 <td>{{$query->query_type}}</td>
                 <td>{{$query->status}}</td>
-                <td>{{$query->created_at}}</td>
+                <td>{{$query->request_time}}</td>
                 <td>
                   @if($query->completion_time=='')
                     Not yet completed
@@ -41,7 +41,7 @@
                     {{$query->completion_time}}
                   @endif
                 </td>
-                <td>{{$query->path}}</td>
+                <td><a href={{$query->path}}>{{$query->path}}</a></td>
               </tr>
             @endforeach
           </tbody>

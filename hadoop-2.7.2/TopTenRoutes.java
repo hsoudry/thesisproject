@@ -186,16 +186,14 @@ public class TopTenRoutes {
 
 	public static void main(String[] args) throws Exception {
 		Configuration conf = new Configuration();
-		String[] otherArgs = new GenericOptionsParser(conf, args).getRemainingArgs();
-		if (otherArgs.length != 3) {
-			System.err.println("Usage: TopTenDriver <in> <out> <query_datetime>");
+		if (args.length != 3) {
+			System.err.println("Usage: TopTenRoutes <in> <out> <query_datetime>");
 			System.exit(2);
 		}
-		conf.set("query_datetime", otherArgs[2]); // args[0]
-		Path inputPath = new Path(otherArgs[0]);
+		conf.set("query_datetime", args[2]); // args[0]
+		Path inputPath = new Path(args[0]);
 		Path countStage = new Path(args[1]+"_counted");
 		Path finalOutput = new Path(args[1]);
-		Path output = new Path(args[1]+"_basic");
 
 		Job job = new Job(conf, "Query 1 Counting Stage");
 		job.setJarByClass(TopTenRoutes.class);
@@ -204,25 +202,11 @@ public class TopTenRoutes {
 		job.setReducerClass(IntSumReducer.class); // Reducer class
 		job.setOutputKeyClass(Text.class);
 		job.setOutputValueClass(IntWritable.class);
-		TextInputFormat.setInputPaths(job,inputPath);
+		FileInputFormat.addInputPath(job,inputPath);
 		job.setOutputFormatClass(SequenceFileOutputFormat.class);
 		SequenceFileOutputFormat.setOutputPath(job, countStage);
 		int code = job.waitForCompletion(true) ? 0 : 1;
 
-		// if(code == 0) {
-		// 	Job outputJob = new Job(conf, "Output Job");
-		// 	outputJob.setJarByClass(TopTenRoutes.class);
-		// 	outputJob.setMapperClass(Mapper.class);
-		// 	outputJob.setNumReduceTasks(1);
-		// 	outputJob.setOutputKeyClass(Text.class);
-		// 	outputJob.setOutputValueClass(IntWritable.class);
-		//
-		// 	outputJob.setInputFormatClass(SequenceFileInputFormat.class);
-		// 	SequenceFileInputFormat.setInputPaths(outputJob,countStage);
-		//
-		// 	TextOutputFormat.setOutputPath(outputJob,output);
-		// 	code = outputJob.waitForCompletion(true) ? 0 : 1;
-		// }
 
 		if(code == 0) {
 			Job top10job = new Job(conf, "Top Ten Most Frequent Routes");
