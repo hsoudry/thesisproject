@@ -20,9 +20,11 @@
                 [
                   'Classification' => 'hadoop-env',
                   'Configurations' => [
-                    'Classification' => 'export',
-                    'Configurations' => [],
-                    'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
+                    [
+                      'Classification' => 'export',
+                      'Configurations' => [],
+                      'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
+                    ],
                   ],
                   'Properties' => [],
                 ],
@@ -37,9 +39,11 @@
                 [
                   'Classification' => 'hadoop-env',
                   'Configurations' => [
-                    'Classification' => 'export',
-                    'Configurations' => [],
-                    'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
+                    [
+                      'Classification' => 'export',
+                      'Configurations' => [],
+                      'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
+                    ],
                   ],
                   'Properties' => [],
                 ],
