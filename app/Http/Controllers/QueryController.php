@@ -108,6 +108,7 @@ class QueryController extends Controller
               'InstanceCount' => 1,
               'InstanceRole' => 'MASTER',
               'InstanceType' => 'm3.xlarge',
+              'Name' => 'Master instance group - 1',
             ],
             [
               'Configurations' => [
@@ -124,6 +125,7 @@ class QueryController extends Controller
               'InstanceCount' => 2,
               'InstanceRole' => 'CORE',
               'InstanceType' => 'm3.xlarge',
+              'Name' => 'Core instance group - 2',
             ],
           ],
         ],
@@ -132,12 +134,12 @@ class QueryController extends Controller
           [
             'ActionOnFailure' => 'CONTINUE',
             'HadoopJarStep' => [
-              'Args' => ['s3a://thesisdata/input', 's3a://thesisdata/output/'+$path, $query_time],
-              'Jar' => 's3a://thesisdata/jar/TopTenRoutes.jar',
+              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'+$path, $query_time],
+              'Jar' => 's3://thesisdata/jar/TopTenRoutes.jar',
               'MainClass' => 'TopTenRoutes',
             ],
-            'LogUri' => 's3a://thesisdata/logs/',
-            'Name' => 'Top ten computation',
+            'LogUri' => 's3://thesisdata/logs/',
+            'Name' => 'Top ten routes computation',
           ],
         ],
       ]);
