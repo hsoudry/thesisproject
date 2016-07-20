@@ -1,6 +1,6 @@
 <?php
   if(!function_exists(buildQuery1)) {
-    
+
     function buildQuery1($query_time, $path) {
       $client = AWS::createClient('EMR');
 
