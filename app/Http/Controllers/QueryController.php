@@ -94,11 +94,33 @@ class QueryController extends Controller
           'Ec2KeyName' => 'EMR key',
           'InstanceGroups' => [
             [
+              'Configurations' => [
+                [
+                  'Classification' => 'hadoop-env',
+                  'Configurations' => [
+                    'Classification' => 'export',
+                    'Configurations' => [],
+                    'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
+                  ],
+                  'Properties' => [],
+                ],
+              ],
               'InstanceCount' => 1,
               'InstanceRole' => 'MASTER',
               'InstanceType' => 'm3.xlarge',
             ],
             [
+              'Configurations' => [
+                [
+                  'Classification' => 'hadoop-env',
+                  'Configurations' => [
+                    'Classification' => 'export',
+                    'Configurations' => [],
+                    'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
+                  ],
+                  'Properties' => [],
+                ],
+              ],
               'InstanceCount' => 2,
               'InstanceRole' => 'CORE',
               'InstanceType' => 'm3.xlarge',
@@ -108,7 +130,7 @@ class QueryController extends Controller
         'Name' => 'Query 1 cluster',
         'Steps' => [
           [
-            'ActionOnFailure' => 'TERMINATE_CLUSTER',
+            'ActionOnFailure' => 'CONTINUE',
             'HadoopJarStep' => [
               'Args' => ['s3a://thesisdata/input', 's3a://thesisdata/output/'+$path, $query_time],
               'Jar' => 's3a://thesisdata/jar/TopTenRoutes.jar',
