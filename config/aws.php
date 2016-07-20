@@ -16,9 +16,17 @@ return [
     | http://docs.aws.amazon.com/aws-sdk-php/v3/guide/guide/configuration.html
     |
     */
-
-    'region' => env('AWS_REGION', 'us-east-1'),
+    'credentials' => [
+        'key'    => 'AKIAI3S3VFC2QIZKF5ZA',
+        'secret' => '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',
+    ],
+    'region' => env('AWS_REGION', 'eu-west-1'),
     'version' => 'latest',
+
+    // email services
+    'Ses' => [
+        'region' => 'eu-west-1',
+    ],
     'ua_append' => [
         'L5MOD/' . AwsServiceProvider::VERSION,
     ],

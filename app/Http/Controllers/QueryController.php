@@ -52,7 +52,7 @@ class QueryController extends Controller
       $path = $request->input('filename');
       $query_time = Carbon::parse($request->input('query_date').' '.$request->input('query_time'));
 
-      $result = buildQuery1($query_time, $path);
+      $result = $this->buildQuery1($query_time->toDateTimeString(), $path);
 
       Query::create(array(
                             'user_id' => $user->id,
@@ -79,7 +79,7 @@ class QueryController extends Controller
       return redirect('queries')->with('status','UPDATED');
     }
 
-    private function buildQuery1(String $query_time, String $path) {
+    private function buildQuery1($query_time, $path) {
       $client = AWS::createClient('EMR');
 
       $result = $client->runJobFlow([
