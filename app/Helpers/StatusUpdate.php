@@ -3,7 +3,7 @@
 if(!function_exists('updateQueryStatus')) {
   function updateQueryStatus($queries) {
     $client = AWS::createClient('EMR');
-    $clusters = json_decode($client->listClusters([]), true);
+    $clusters = json_decode($client->listClusters([]));
 
     foreach ($queries as $query) {
       $found = false;
