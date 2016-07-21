@@ -3,19 +3,22 @@
 if(!function_exists('updateQueryStatus')) {
   function updateQueryStatus($queries) {
     $client = AWS::createClient('EMR');
-    $clusters = json_decode($client->listClusters([]));
+    $result = $client->listClusters([]);
 
     foreach ($queries as $query) {
       $found = false;
-      foreach ($clusters->clusters as $cluster) {
-        if($cluster->Id == $query->job_flow_id && $query->completion_time == NULL) {
-          $query->status = $cluster->Status->State;
-          $query->completion_time = $cluster->Status->Timeline->EndDateTime;
+      foreach ($result['Clusters'] as $cluster) {
+        if($cluster['Id'] == $query->job_flow_id && $query->completion_time == NULL) {
+          $job_status = $cluster['Status']['State'];
+          if(($job_status == 'TERMINATED')||($job_status == 'TERMINATED_WITH_ERRORS')) {
+            $query->status = $job_status;
+            $query->completion_time = $cluster['Status']['Timeline']['EndDateTime'];
+          }
           $found = true;
         }
       }
       if($found == false) {
-        $query->status = "COMPLETED";
+        $query->status = "TERMINATED";
       }
       $query->save();
     }

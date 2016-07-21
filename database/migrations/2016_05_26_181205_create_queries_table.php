@@ -17,7 +17,7 @@ class CreateQueriesTable extends Migration
             $table->string('job_flow_id')->nullable();
             $table->integer('user_id')->unsigned();
             $table->enum('query_type', [1,2]);
-            $table->enum('status', ['PENDING','RUNNING','COMPLETED','CANCELLED','FAILED','INTERRUPTED'])->default('PENDING ');
+            $table->enum('status', ['STARTING','BOOTSTRAPPING','RUNNING','WAITING','TERMINATING','TERMINATED','TERMINATED_WITH_ERRORS'])->default('RUNNING');
             $table->timestamp('completion_time')->nullable();
             $table->string('path');
             $table->timestamp('query_time');

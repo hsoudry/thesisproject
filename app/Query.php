@@ -11,8 +11,8 @@ class Query extends Model
       'query_type',
       'status',
       'path',
-      'request_time',
       'query_time',
+      'job_flow_id',
     ];
 
     protected $guarded = [

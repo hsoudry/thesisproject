@@ -56,9 +56,9 @@ class QueryController extends Controller
       $query_time = Carbon::parse($request->input('query_date').' '.$request->input('query_time'));
 
       $result = buildQuery1($query_time->toDateTimeString(), $path);
-
+      $jfid = $result['JobFlowId'];
       Query::create(array(
-                            'job_flow_id' => $result,
+                            'job_flow_id' => $jfid,
                             'user_id' => $user->id,
                             'query_type' => $request->input('query_type'),
                             'path' => $path,

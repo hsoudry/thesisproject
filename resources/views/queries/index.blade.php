@@ -22,7 +22,7 @@
               <thead>
                 <tr>
                   <th>Query type</th>
-                  <th>Status</th>
+                  <th>Cluster status</th>
                   <th>Request time</th>
                   <th>Completion time</th>
                   <th>Results</th>
@@ -36,17 +36,17 @@
                 <td>{{$query->created_at}}</td>
                 <td>
                   @if($query->completion_time=='')
-                    @if(!($query->status=='COMPLETED'))
-                      Not yet completed
-                    @else
+                    @if(($query->status == 'TERMINATED' || ($query->status == 'TERMINATED_WITH_ERRORS')))
                       NOT AVAILABLE
+                    @else
+                      
                     @endif
                   @else
-                    {{$query->completion_time}}
+                    {!!Carbon\Carbon::parse($query->completion_time)->format('Y-m-d H:i:s')!!}
                   @endif
                 </td>
                 <td>
-                  @if($query->status == 'COMPLETED')
+                  @if($query->status == 'TERMINATED')
                     <a href="s3://thesisdata/output/"+{{$query->path}}+"part-r-00000">{{$query->path}}</a>
                   @endif
                 </td>
