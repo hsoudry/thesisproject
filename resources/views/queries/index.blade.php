@@ -36,12 +36,20 @@
                 <td>{{$query->created_at}}</td>
                 <td>
                   @if($query->completion_time=='')
-                    Not yet completed
+                    @if(!($query->status=='COMPLETED'))
+                      Not yet completed
+                    @else
+                      NOT AVAILABLE
+                    @endif
                   @else
                     {{$query->completion_time}}
                   @endif
                 </td>
-                <td><a href={{$query->path}}>{{$query->path}}</a></td>
+                <td>
+                  @if($query->status == 'COMPLETED')
+                    <a href="s3://thesisdata/output/"+{{$query->path}}+"part-r-00000">{{$query->path}}</a>
+                  @endif
+                </td>
               </tr>
             @endforeach
           </tbody>

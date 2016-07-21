@@ -25,6 +25,9 @@ class QueryController extends Controller
       $user = Auth::user();
       $queries = Query::latest()->get()->where('user_id',$user->id);
 
+      // check the queries status and update it if necessary
+      updateQueryStatus($queries);
+
       return view('queries.index', compact('queries'));
     }
 
