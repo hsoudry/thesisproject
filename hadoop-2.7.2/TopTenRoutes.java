@@ -188,6 +188,11 @@ public class TopTenRoutes {
 		Configuration conf = new Configuration();
 		if (args.length != 3) {
 			System.err.println("Usage: TopTenRoutes <in> <out> <query_datetime>");
+			System.err.println("You have " + args.length + " arguments.");
+			System.err.println("They are: ");
+			for (int i=0; i<args.length; i++) {
+				System.err.println(args[i]);
+			}
 			System.exit(2);
 		}
 		conf.set("query_datetime", args[2]); // args[0]

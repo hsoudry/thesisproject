@@ -14,9 +14,10 @@ class CreateQueriesTable extends Migration
     {
         Schema::create('queries', function (Blueprint $table) {
             $table->increments('id');
+            $table->string('job_flow_id')->nullable();
             $table->integer('user_id')->unsigned();
             $table->enum('query_type', [1,2]);
-            $table->enum('status', ['Pending','Running','Done','Error'])->default('Pending');
+            $table->enum('status', ['PENDING','RUNNING','COMPLETED','CANCELLED','FAILED','INTERRUPTED'])->default('PENDING ');
             $table->timestamp('completion_time')->nullable();
             $table->string('path');
             $table->timestamp('query_time');

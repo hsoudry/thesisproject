@@ -33,7 +33,7 @@
               <tr>
                 <td>{{$query->query_type}}</td>
                 <td>{{$query->status}}</td>
-                <td>{{$query->request_time}}</td>
+                <td>{{$query->created_at}}</td>
                 <td>
                   @if($query->completion_time=='')
                     Not yet completed

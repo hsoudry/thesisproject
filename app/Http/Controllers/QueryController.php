@@ -55,13 +55,14 @@ class QueryController extends Controller
       $result = buildQuery1($query_time->toDateTimeString(), $path);
 
       Query::create(array(
+                            'job_flow_id' => $result,
                             'user_id' => $user->id,
                             'query_type' => $request->input('query_type'),
                             'path' => $path,
                             'query_time' => $query_time,
                           ));
 
-     return redirect('queries')->with('status','CREATED')->with('result',$result);
+     return redirect('queries')->with('status','CREATED');
     }
 
     public function update($id, QueryRequest $request)

@@ -5,14 +5,13 @@
       $client = AWS::createClient('EMR');
 
       $result = $client->runJobFlow([
-        'AmiVersion' => '4.7.1',
+	'ReleaseLabel' => 'emr-4.7.2',
         'Applications' => [
           [
             'Name' => 'Hadoop',
-            'Version' => '2.7.2',
           ],
         ],
-        'Instances' => [
+	'Instances' => [
           'Ec2KeyName' => 'EMR key',
           'InstanceGroups' => [
             [
@@ -21,11 +20,11 @@
                   'Classification' => 'hadoop-env',
                   'Configurations' => [
                     [
-                      'Classification' => 'export',
+		      'Classification' => 'export',
                       'Configurations' => [],
                       'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
                     ],
-                  ],
+		  ],
                   'Properties' => [],
                 ],
               ],
@@ -39,12 +38,12 @@
                 [
                   'Classification' => 'hadoop-env',
                   'Configurations' => [
-                    [
+		    [
                       'Classification' => 'export',
                       'Configurations' => [],
                       'Properties' => ['JAVA_HOME' => '/usr/lib/jvm/java-1.8.0'],
                     ],
-                  ],
+		  ],
                   'Properties' => [],
                 ],
               ],
@@ -56,16 +55,17 @@
           ],
         ],
         'Name' => 'Query 1 cluster',
+	'JobFlowRole' => 'EMR_EC2_DefaultRole',
+	'ServiceRole' => 'EMR_DefaultRole',
+	'LogUri' => 's3://thesisdata/logs/',
         'Steps' => [
           [
             'ActionOnFailure' => 'CONTINUE',
             'HadoopJarStep' => [
-              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'+$path, $query_time],
-              'Jar' => 's3://thesisdata/jar/TopTenRoutes.jar',
-              'MainClass' => 'TopTenRoutes',
+              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'.$path, $query_time],
+              'Jar' => "s3://thesisdata/jar/TopTenRoutes.jar",
             ],
-            'LogUri' => 's3://thesisdata/logs/',
-            'Name' => 'Top ten routes computation',
+            'Name' => 'Top Ten Routes computation',
           ],
         ],
       ]);
