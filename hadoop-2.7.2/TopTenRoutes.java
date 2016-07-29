@@ -37,19 +37,33 @@ public class TopTenRoutes {
 	public static class TokenizerMapper extends Mapper<Object, Text, Text, IntWritable> {
 		private final static IntWritable one = new IntWritable(1);
 		private Text route = new Text();
+		private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+		private Calendar query_datetime = null;
+		private Calendar query_lowerbound = null;
+		private double[] x = new double[GRID_SIZE];
+		private double[] y = new double[GRID_SIZE];
 
-		public void map(Object key, Text value, Context context) throws IOException, InterruptedException { // The input text is one line
-			try {
-				SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // date format used by the input file
-				// we get the datetime from the user input
+		@Override
+		public void setup(Context context) throws IOException, InterruptedException {
+      try {
 				Configuration conf = context.getConfiguration();
-				Calendar query_datetime = new GregorianCalendar();
 				Date d = simpleDateFormat.parse(conf.get("query_datetime"));
 				query_datetime.setTime(d);
-
 				Calendar query_lowerbound = (GregorianCalendar)query_datetime.clone();
 				query_lowerbound.add(Calendar.MINUTE, -30); // creation of the 30 minutes window
+				for(int j=0;j<GRID_SIZE;j++) {
+					x[j] = FIRST_CELL_LONGITUDE+j*0.005986;
+					y[j] = FIRST_CELL_LATITUDE-j*0.004491556;
+				}
+			} catch(ParseException pe) {
+				System.err.println("ParseException: "+pe.getMessage());
+				System.exit(0);
+			}
+		}
 
+		@Override
+		public void map(Object key, Text value, Context context) throws IOException, InterruptedException { // The input text is one line
+			try {
 				String[] parameters = value.toString().split(",");
 				int n = parameters.length; // n should always be 17
 
@@ -57,18 +71,12 @@ public class TopTenRoutes {
 					String pickup_datetime_string = parameters[2];
 					String dropoff_datetime_string = parameters[3];
 					Calendar dropoff_datetime = new GregorianCalendar();
-					d = simpleDateFormat.parse(dropoff_datetime_string);
+					Date d = simpleDateFormat.parse(dropoff_datetime_string);
 					dropoff_datetime.setTime(d);
 					if(dropoff_datetime.after(query_lowerbound) && dropoff_datetime.before(query_datetime)) {
 						double pickup_longitude = Double.parseDouble(parameters[6]), pickup_latitude = Double.parseDouble(parameters[7]), dropoff_longitude = Double.parseDouble(parameters[8]), dropoff_latitude = Double.parseDouble(parameters[9]);
-
-						if(isInGrid(pickup_longitude,pickup_latitude,dropoff_longitude,dropoff_latitude)) {
-							double[] x = new double[GRID_SIZE], y = new double[GRID_SIZE];
-							for(int j=0;j<GRID_SIZE;j++) {
-								x[j] = FIRST_CELL_LONGITUDE+j*0.005986;
-								y[j] = FIRST_CELL_LATITUDE-j*0.004491556;
-							}
-							int starting_cell_x = getX(pickup_longitude, x), starting_cell_y = getY(pickup_latitude, y), stoping_cell_x = getX(dropoff_longitude, x), stoping_cell_y = getY(dropoff_latitude, y);
+						if(TopTenRoutes.isInGrid(pickup_longitude,pickup_latitude,dropoff_longitude,dropoff_latitude)) {
+							int starting_cell_x = TopTenRoutes.getX(pickup_longitude, x), starting_cell_y = TopTenRoutes.getY(pickup_latitude, y), stoping_cell_x = TopTenRoutes.getX(dropoff_longitude, x), stoping_cell_y = TopTenRoutes.getY(dropoff_latitude, y);
 							route.set("<<"+Integer.toString(starting_cell_x)+","+Integer.toString(starting_cell_y)+">,<"+Integer.toString(stoping_cell_x)+","+Integer.toString(stoping_cell_y)+">>"); // <<x,y>,<x,y>>
 							context.write(route,one);
 						}
@@ -80,54 +88,10 @@ public class TopTenRoutes {
 				System.exit(0);
 			}
 		}
-
-		private boolean isInGrid(double pickup_longitude, double pickup_latitude, double dropoff_longitude, double dropoff_latitude) {
-			if(pickup_longitude<MIN_LONGITUDE || pickup_longitude>MAX_LONGITUDE || pickup_latitude<MIN_LATITUDE || pickup_latitude>MAX_LATITUDE)
-				return false;
-			if(dropoff_longitude<MIN_LONGITUDE || dropoff_longitude>MAX_LONGITUDE || dropoff_latitude<MIN_LATITUDE || dropoff_latitude>MAX_LATITUDE)
-				return false;
-			return true;
-		}
-
-		private int getX(double l, double[] centers) {
-			int lo = 0;
-			int hi = centers.length-1;
-			int mid = 1;
-			double last_value;
-			while(lo<=hi) {
-				mid = (lo+hi)/2;
-				last_value = centers[mid];
-				if(l<last_value)
-					hi = mid-1;
-				else if (l>last_value)
-					lo = mid+1;
-				else
-					return (mid+1);
-			}
-			return (mid+1);
-		}
-		private int getY(double l, double[] centers) {
-			int lo = 0;
-			int hi = centers.length-1;
-			int mid = 1;
-			double last_value;
-			while(lo<=hi) {
-				mid = (lo+hi)/2;
-				last_value = centers[mid];
-				if(l<last_value)
-					lo = mid+1;
-				else if (l>last_value)
-					hi = mid-1;
-				else
-					return (mid+1);
-			}
-			return (mid+1);
-		}
 	}
 
 
 	public static class SOTopTenMapper extends Mapper<Text, IntWritable, NullWritable, Text> {
-		// Our output key and value Writables
 		private TreeMap<Integer, Text> repToRecordMap = new TreeMap<Integer, Text>();
 
 		@Override
@@ -140,7 +104,7 @@ public class TopTenRoutes {
 		}
 
 		@Override
-		protected void cleanup(Context context) throws IOException, InterruptedException { // is called once per mapper, when all the map functions are finished running
+		protected void cleanup(Context context) throws IOException, InterruptedException {
 			for(Text value : repToRecordMap.values())
 				context.write(NullWritable.get(),value);
 
@@ -150,6 +114,7 @@ public class TopTenRoutes {
 	public static class IntSumReducer extends Reducer<Text,IntWritable,Text,IntWritable> {
 		private IntWritable result = new IntWritable();
 
+		@Override
 		public void reduce(Text key, Iterable<IntWritable> values, Context context) throws IOException, InterruptedException {
 			int sum = 0;
 			for (IntWritable val : values) {
@@ -179,6 +144,49 @@ public class TopTenRoutes {
 				context.write(NullWritable.get(),new Text(pair.getKey().toString()+"	"+pair.getValue().toString()));
 			}
 		}
+	}
+
+	public static boolean isInGrid(double pickup_longitude, double pickup_latitude, double dropoff_longitude, double dropoff_latitude) {
+		if(pickup_longitude<MIN_LONGITUDE || pickup_longitude>MAX_LONGITUDE || pickup_latitude<MIN_LATITUDE || pickup_latitude>MAX_LATITUDE)
+			return false;
+		if(dropoff_longitude<MIN_LONGITUDE || dropoff_longitude>MAX_LONGITUDE || dropoff_latitude<MIN_LATITUDE || dropoff_latitude>MAX_LATITUDE)
+			return false;
+		return true;
+	}
+
+	public static int getX(double l, double[] centers) {
+		int lo = 0;
+		int hi = centers.length-1;
+		int mid = 1;
+		double last_value;
+		while(lo<=hi) {
+			mid = (lo+hi)/2;
+			last_value = centers[mid];
+			if(l<last_value)
+				hi = mid-1;
+			else if (l>last_value)
+				lo = mid+1;
+			else
+				return (mid+1);
+		}
+		return (mid+1);
+	}
+	public static int getY(double l, double[] centers) {
+		int lo = 0;
+		int hi = centers.length-1;
+		int mid = 1;
+		double last_value;
+		while(lo<=hi) {
+			mid = (lo+hi)/2;
+			last_value = centers[mid];
+			if(l<last_value)
+				lo = mid+1;
+			else if (l>last_value)
+				hi = mid-1;
+			else
+				return (mid+1);
+		}
+		return (mid+1);
 	}
 
 	public static void main(String[] args) throws Exception {
@@ -218,12 +226,8 @@ public class TopTenRoutes {
 			top10job.setNumReduceTasks(1);
 			top10job.setOutputKeyClass(NullWritable.class);
 			top10job.setOutputValueClass(Text.class);
-
-			//top10job.getConfiguration().set("org.apache.hadoop.mapreduce.lib.output.TextOutputFormat.separator", "");
-
 			top10job.setInputFormatClass(SequenceFileInputFormat.class);
 			SequenceFileInputFormat.setInputPaths(top10job, countStage);
-
 			FileOutputFormat.setOutputPath(top10job, finalOutput);
 			code = top10job.waitForCompletion(true) ? 0 : 2;
 		}
