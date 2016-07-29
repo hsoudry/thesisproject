@@ -47,7 +47,7 @@
                 </td>
                 <td>
                   @if($query->status == 'TERMINATED')
-                  <a href="{{ URL::to('https://thesisdata.s3.amazonaws.com/output/'.$query->path.'/part-r-00000') }}">Download</a>
+                  <a href="{{ URL::to('https://thesisdata.s3.amazonaws.com/output/'.$user->name.'/'.$query->path.'/part-r-00000') }}">Download</a>
                   @endif
                 </td>
               </tr>

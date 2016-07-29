@@ -28,7 +28,7 @@ class QueryController extends Controller
       // check the queries status and update it if necessary
       updateQueryStatus($queries);
 
-      return view('queries.index', compact('queries'));
+      return view('queries.index', compact('queries', 'user'));
     }
 
     public function show($id) {
@@ -56,12 +56,12 @@ class QueryController extends Controller
       $query_time = Carbon::parse($request->input('query_date').' '.$request->input('query_time'));
 
       if ($request->'query_type' == '1') {
-        $result = buildQuery1($query_time->toDateTimeString(), $path);
+        $result = buildQuery1($query_time->toDateTimeString(), $path, $user->name);
       }
       else {
-        $result = buildQuery2($query_time->toDateTimeString(), $path);
+        $result = buildQuery2($query_time->toDateTimeString(), $path, $user->name);
       }
-      
+
       $jfid = $result['JobFlowId'];
       Query::create(array(
                             'job_flow_id' => $jfid,

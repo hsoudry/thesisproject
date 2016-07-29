@@ -1,7 +1,7 @@
 <?php
   if(!function_exists('buildQuery1')) {
 
-    function buildQuery1($query_time, $path) {
+    function buildQuery1($query_time, $path, $user_name) {
       $client = AWS::createClient('EMR');
 
       $result = $client->runJobFlow([
@@ -62,7 +62,7 @@
           [
             'ActionOnFailure' => 'CONTINUE',
             'HadoopJarStep' => [
-              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'.$path, $query_time],
+              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'.$user_name."/".$path, $query_time],
               'Jar' => "s3://thesisdata/jar/TopTenRoutes.jar",
             ],
             'Name' => 'Top Ten Routes computation',
@@ -74,7 +74,7 @@
   }
   if(!function_exists('buildQuery2')) {
 
-    function buildQuery2($query_time, $path) {
+    function buildQuery2($query_time, $path, $user_name) {
       $client = AWS::createClient('EMR');
 
       $result = $client->runJobFlow([
@@ -135,7 +135,7 @@
           [
             'ActionOnFailure' => 'CONTINUE',
             'HadoopJarStep' => [
-              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'.$path, $query_time],
+              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'.$user_name."/".$path, $query_time],
               'Jar' => "s3://thesisdata/jar/TopTenProfitability.jar",
             ],
             'Name' => 'Top Ten Routes computation',
