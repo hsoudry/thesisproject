@@ -39,7 +39,7 @@
                     @if(($query->status == 'TERMINATED' || ($query->status == 'TERMINATED_WITH_ERRORS')))
                       NOT AVAILABLE
                     @else
-                      
+
                     @endif
                   @else
                     {!!Carbon\Carbon::parse($query->completion_time)->format('Y-m-d H:i:s')!!}
@@ -47,7 +47,7 @@
                 </td>
                 <td>
                   @if($query->status == 'TERMINATED')
-                    <a href="s3://thesisdata/output/"+{{$query->path}}+"part-r-00000">{{$query->path}}</a>
+                  <a href="{{ URL::to('https://thesisdata.s3.amazonaws.com/output/'.$query->path.'/part-r-00000') }}">Download</a>
                   @endif
                 </td>
               </tr>
