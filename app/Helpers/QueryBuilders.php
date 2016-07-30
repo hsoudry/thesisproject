@@ -60,12 +60,28 @@
 	'LogUri' => 's3://thesisdata/logs/',
         'Steps' => [
           [
-            'ActionOnFailure' => 'CONTINUE',
+            'ActionOnFailure' => 'TERMINATE_CLUSTER',
             'HadoopJarStep' => [
-              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'.$user_name."/".$path, $query_time],
+              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=s3://thesisdata/input/','--dest=hdfs:///input'],
+              'Jar' => "command-runner.jar",
+            ],
+            'Name' => 'Copy input from S3 to cluster',
+          ],
+          [
+            'ActionOnFailure' => 'TERMINATE_CLUSTER',
+            'HadoopJarStep' => [
+              'Args' => ['hdfs:///input', 'hdfs:///output/'.$user_name."/".$path, $query_time],
               'Jar' => "s3://thesisdata/jar/TopTenRoutes.jar",
             ],
             'Name' => 'Top Ten Routes computation',
+          ],
+          [
+            'ActionOnFailure' => 'TERMINATE_CLUSTER',
+            'HadoopJarStep' => [
+              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=hdfs:///output/'.$user_name."/".$path,'--dest=hdfs:///input'],
+              'Jar' => "command-runner.jar",
+            ],
+            'Name' => 'Copy output from cluster to S3',
           ],
         ],
       ]);
@@ -127,18 +143,34 @@
             ],
           ],
         ],
-        'Name' => 'Query 1 cluster',
+        'Name' => 'Query 2 cluster',
 	'JobFlowRole' => 'EMR_EC2_DefaultRole',
 	'ServiceRole' => 'EMR_DefaultRole',
 	'LogUri' => 's3://thesisdata/logs/',
         'Steps' => [
           [
-            'ActionOnFailure' => 'CONTINUE',
+            'ActionOnFailure' => 'TERMINATE_CLUSTER',
             'HadoopJarStep' => [
-              'Args' => ['s3://thesisdata/input', 's3://thesisdata/output/'.$user_name."/".$path, $query_time],
+              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=s3://thesisdata/input/','--dest=hdfs:///input'],
+              'Jar' => "command-runner.jar",
+            ],
+            'Name' => 'Copy input from S3 to cluster',
+          ],
+          [
+            'ActionOnFailure' => 'TERMINATE_CLUSTER',
+            'HadoopJarStep' => [
+              'Args' => ['hdfs:///input', 'hdfs:///output/'.$user_name."/".$path, $query_time],
               'Jar' => "s3://thesisdata/jar/TopTenProfitability.jar",
             ],
-            'Name' => 'Top Ten Routes computation',
+            'Name' => 'Top Ten Most Profitable areas computation',
+          ],
+          [
+            'ActionOnFailure' => 'TERMINATE_CLUSTER',
+            'HadoopJarStep' => [
+              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=hdfs:///output/'.$user_name."/".$path,'--dest=hdfs:///input'],
+              'Jar' => "command-runner.jar",
+            ],
+            'Name' => 'Copy output from cluster to S3',
           ],
         ],
       ]);

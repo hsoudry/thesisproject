@@ -46,10 +46,10 @@ public class TopTenRoutes {
 		@Override
 		public void setup(Context context) throws IOException, InterruptedException {
       try {
-				Configuration conf = context.getConfiguration();
-				Date d = simpleDateFormat.parse(conf.get("query_datetime"));
+				query_datetime = new GregorianCalendar();
+				Date d = simpleDateFormat.parse(context.getConfiguration().get("query_datetime"));
 				query_datetime.setTime(d);
-				Calendar query_lowerbound = (GregorianCalendar)query_datetime.clone();
+				query_lowerbound = (GregorianCalendar)query_datetime.clone();
 				query_lowerbound.add(Calendar.MINUTE, -30); // creation of the 30 minutes window
 				for(int j=0;j<GRID_SIZE;j++) {
 					x[j] = FIRST_CELL_LONGITUDE+j*0.005986;
