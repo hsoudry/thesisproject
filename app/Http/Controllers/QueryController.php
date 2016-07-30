@@ -55,7 +55,7 @@ class QueryController extends Controller
       $path = $request->input('filename');
       $query_time = Carbon::parse($request->input('query_date').' '.$request->input('query_time'));
 
-      if ($request->'query_type' == '1') {
+      if ($request->input('query_type') == '1') {
         $result = buildQuery1($query_time->toDateTimeString(), $path, $user->name);
       }
       else {

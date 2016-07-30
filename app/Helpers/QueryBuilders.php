@@ -78,7 +78,7 @@
           [
             'ActionOnFailure' => 'TERMINATE_CLUSTER',
             'HadoopJarStep' => [
-              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=hdfs:///output/'.$user_name."/".$path,'--dest=hdfs:///input'],
+              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=hdfs:///output/'.$user_name."/".$path,'--dest=s3://thesisdata/output/'.$user_name."/".$path],
               'Jar' => "command-runner.jar",
             ],
             'Name' => 'Copy output from cluster to S3',
@@ -167,7 +167,7 @@
           [
             'ActionOnFailure' => 'TERMINATE_CLUSTER',
             'HadoopJarStep' => [
-              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=hdfs:///output/'.$user_name."/".$path,'--dest=hdfs:///input'],
+              'Args' => ['s3-dist-cp','--s3Endpoint=s3.amazonaws.com','--src=hdfs:///output/'.$user_name."/".$path,'--dest=s3://thesisdata/output/'.$user_name."/".$path],
               'Jar' => "command-runner.jar",
             ],
             'Name' => 'Copy output from cluster to S3',
