@@ -414,6 +414,7 @@ public class TopTenProfitability {
 
   public static void main(String[] args) throws Exception {
     Configuration conf = new Configuration();
+    conf.set("mapreduce.input.fileinputformat.split.minsize", "536870912"); 
     if (args.length != 3) {
   		System.err.println("Usage: TopTenProfitability <in> <out> <query_datetime>");
   		System.err.println("You have " + args.length + " arguments.");
@@ -436,6 +437,7 @@ public class TopTenProfitability {
     medianJob.setMapperClass(MedianMapper.class);
     medianJob.setReducerClass(MedianReducer.class);
     medianJob.setCombinerClass(MedianCombiner.class);
+    medianJob.setNumReduceTasks(16);
     FileInputFormat.addInputPath(medianJob,inputPath);
     medianJob.setOutputKeyClass(Text.class);
     medianJob.setMapOutputValueClass(SortedMapWritable.class);
@@ -449,6 +451,7 @@ public class TopTenProfitability {
     emptyTaxisLocationJob.setMapperClass(EmptyTaxisMapper.class);
     emptyTaxisLocationJob.setReducerClass(EmptyTaxisReducer.class);
     emptyTaxisLocationJob.setCombinerClass(EmptyTaxisCombiner.class);
+    emptyTaxisLocationJob.setNumReduceTasks(16);
     FileInputFormat.addInputPath(emptyTaxisLocationJob,inputPath);
     emptyTaxisLocationJob.setOutputKeyClass(Text.class);
     emptyTaxisLocationJob.setMapOutputValueClass(Text.class);

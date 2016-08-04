@@ -11,7 +11,8 @@ rm -r output_merge/
 bin/hadoop com.sun.tools.javac.Main TopTenProfitability.java
 
 # Create the jar
-jar cf TopTenProfitability.jar TopTenProfitability*.class
+jar cfm TopTenProfitability.jar MANIFESTPROFITABILITY.txt TopTenProfitability*.class
+#jar cf TopTenProfitability.jar TopTenProfitability*.class
 
 # Run the jar
 bin/hadoop jar TopTenProfitability.jar TopTenProfitability input output "2013-01-01 00:30:00"
